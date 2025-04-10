@@ -1,18 +1,24 @@
+# src/health.py
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
-
-# from src.database.database import get_db
 from src.database import get_db
+from src.utils.logger import logger
 
 healthRouter = APIRouter()
 
 @healthRouter.get("/health")
-def check_health(db: Session = Depends(get_db)):
+async def check_health(db: AsyncSession = Depends(get_db)):
     try:
-        # Execute a simple query to check the database connection
-        result = db.execute(text("SELECT 1")).fetchone()
-        if result:
+        logger.debug("Executing health check query")
+        result = await db.execute(text("SELECT 1"))
+        row = result.fetchone()
+        if row:
+            logger.debug("Database health check successful")
             return {"status": "healthy", "database": "connected"}
+        else:
+            logger.warn("Database health check query returned no results")
+            return {"status": "unhealthy", "database": "no results"}
     except Exception as e:
+        logger.error(f"Database health check failed: {str(e)}")
         return {"status": "unhealthy", "database": "disconnected", "error": str(e)}

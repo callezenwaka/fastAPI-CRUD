@@ -31,7 +31,7 @@ ENABLED = ENVIRONMENT != "test"
 # Configure logger with appropriate level
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL),
-    format='[%(levelname)s]    %(asctime)s %(message)s',
+    format='[%(levelname)s] %(asctime)s %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
@@ -55,10 +55,6 @@ class Logger:
     def debug(self, message, *args):
         if self.enabled and self.is_dev:  # Only log debug in development mode
             logging.debug(f"{message}", *args)
-
-    # def debug(self, message, *args):
-    #     if self.enabled:
-    #         logging.debug(f"{message}", *args)
 
 # Create logger instance
 logger = Logger()

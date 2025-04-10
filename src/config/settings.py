@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     # Server settings
     environment: str = "development"
     port: int = 8000
+    api_version: str = "v1"  # Add this line
     
     # Logging
     log_level: str = "INFO"
@@ -15,12 +16,11 @@ class Settings(BaseSettings):
     db_username: str = "app_user"
     db_password: str = "app_password"
     db_name: str = "app_db"
-    
+
     @property
     def database_url(self) -> str:
-        """Construct the database URL from components"""
-        # return f"postgresql+asyncpg://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
-        return f"postgresql://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+        """Construct the database URL with asyncpg driver"""
+        return f"postgresql+asyncpg://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
     
     model_config = SettingsConfigDict(
         env_file=".env",
