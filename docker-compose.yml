@@ -1,0 +1,35 @@
+# docker-compose.yml
+
+services:
+  app-database:
+    image: postgres
+    environment:
+      - POSTGRES_USER=app_user
+      - POSTGRES_PASSWORD=app_password
+      - POSTGRES_DB=app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  # book:
+  #   build: .
+  #   # command: fastapi dev src/ --host 0.0.0.0 --port 8000
+  #   command: uvicorn src:app --reload --host 0.0.0.0 --port $PORT
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     # - DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/books_db
+  #     - PORT=8000
+  #     - DB_HOST=app-postgres
+  #     - DB_PORT=5432
+  #     - DB_USER=app_user
+  #     - DB_PASSWORD=app_password
+  #     - DB_NAME=app_db
+
+volumes:
+  postgres_data:

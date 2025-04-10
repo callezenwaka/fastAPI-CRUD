@@ -1,1 +1,11 @@
-/node_modules
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS default
+.DS_Store
+
+# Environments
+.env
+.venv
