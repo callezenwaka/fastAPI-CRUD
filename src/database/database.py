@@ -1,14 +1,22 @@
 # src/database/database.py
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
-from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import text
+# from sqlmodel import SQLModel, text # Use SQLModel instead of declarative_base
+# from sqlmodel.ext.asyncio.session import AsyncSession
+# from sqlmodel.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession, async_sessionmaker
+
+# from sqlalchemy.ext.asyncio import AsyncEngine
+# from sqlalchemy.orm import sessionmaker
+# from sqlmodel import SQLModel, create_engine
+# from sqlmodel.ext.asyncio.session import AsyncSession
+
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, async_sessionmaker
+from sqlmodel import SQLModel, create_engine, text
+from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import AsyncGenerator
 from src.config.settings import settings
 from src.utils.logger import logger
+from src.books.models import Book
 
-# Create Base class for models
-Base = declarative_base()
+# No need for Base = declarative_base() since SQLModel serves as your base class
 
 class Database:
     def __init__(self, db_url: str = None):
@@ -24,13 +32,16 @@ class Database:
             # Create async SQLAlchemy engine
             self.engine = create_async_engine(self.db_url, echo=True)
             async with self.engine.begin() as connection:
-                statement = text("SELECT 'hello';")
-                result = await connection.execute(statement)
-                logger.debug(f"Database connection established {result.all()}")
+                # statement = text("SELECT 'hello';")
+                # result = await connection.execute(statement)
+                # logger.debug(f"Database connection established {result.all()}")
+
+                await connection.run_sync(SQLModel.metadata.create_all)
+
             logger.debug("Database engine created successfully")
             
             # Create async session maker
-            self.SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+            self.SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=self.engine, expire_on_commit=False)
             logger.debug("Database session factory created")
             
             return self
@@ -42,16 +53,17 @@ class Database:
     async def create_tables(self):
         """Create all tables defined in the models"""
         if not self.engine:
-            self.connect()
+            await self.connect()
         
         async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+            # Use SQLModel.metadata instead of Base.metadata
+            await conn.run_sync(SQLModel.metadata.create_all)
         logger.debug("Database tables created")
         
     async def get_db(self) -> AsyncGenerator[AsyncSession, None]:
         """Dependency for getting a database session"""
         if not self.SessionLocal:
-            self.connect()
+            await self.connect()
             
         async with self.SessionLocal() as session:
             logger.debug("Database session created")
@@ -61,12 +73,6 @@ class Database:
                 await session.close()
                 logger.debug("Database session closed")
 
-
-# # Create and initialize the database
-# database = Database().connect()
-
-# # For dependency injection
-# get_db = database.get_db
 
 # Create database instance without connecting
 database = Database()

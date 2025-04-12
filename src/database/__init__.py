@@ -4,7 +4,7 @@
 # __all__ = ['database']
 
 # src/database/__init__.py
-from .database import Base, get_db, database
+from .database import get_db, database
 
 # Export these items so they can be imported directly from src.database
-__all__ = ['Base', 'get_db', 'database']
+__all__ = ['get_db', 'database']
