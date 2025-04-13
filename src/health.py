@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from src.database import get_db
-from src.utils.logger import logger
+from src.utils import logger
 
 healthRouter = APIRouter()
 

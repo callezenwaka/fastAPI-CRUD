@@ -1,11 +1,10 @@
-# src/books/models.py
-from sqlmodel import SQLModel, Field, Column
-from datetime import date, datetime
+from datetime import datetime
+from sqlmodel import Column, Field, SQLModel
 import sqlalchemy.dialects.postgresql as pg 
 import uuid
 
-class Book(SQLModel, table=True):
-    __tablename__ = "books"
+class User(SQLModel, table=True):
+    __tablename__ = 'users'
 
     uid: uuid.UUID = Field(
         sa_column=Column(
@@ -15,12 +14,17 @@ class Book(SQLModel, table=True):
             default=uuid.uuid4
         ),
     )
-    title: str = Field(nullable=False)
-    author: str = Field(nullable=False)
-    publisher: str = Field(nullable=False)
-    published_date: date = Field(nullable=False)
-    page_count: int = Field(nullable=False)
-    language: str = Field(nullable=False)
+    username: str = Field(nullable=False)
+    email: str = Field(nullable=False)
+    first_name: str = Field(nullable=False)
+    last_name: str = Field(nullable=False)
+    role: str = Field(sa_column=Column(
+        pg.VARCHAR, 
+        nullable=False, 
+        server_default="user"
+    ))
+    is_verified: bool = Field(default=False)
+    password_hash: str = Field(exclude=True)
     created_at: datetime = Field(
         sa_column=Column(
             pg.TIMESTAMP, 
@@ -37,4 +41,4 @@ class Book(SQLModel, table=True):
     )
 
     def __repr__(self):
-        return f"<Book {self.title}>"
+        return f"<User {self.username}>"

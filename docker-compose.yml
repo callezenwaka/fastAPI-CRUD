@@ -2,17 +2,41 @@
 
 services:
   app-database:
-    image: postgres
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_USER=app_user
       - POSTGRES_PASSWORD=app_password
       - POSTGRES_DB=app_db
-    ports:
-      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - app-database-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d app_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - app-net
 
-  # book:
+    # Redis for session storage
+  app-redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - app-redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    networks:
+      - app-net
+
+  # app-server:
   #   build: .
   #   # command: fastapi dev src/ --host 0.0.0.0 --port 8000
   #   command: uvicorn src:app --reload --host 0.0.0.0 --port $PORT
@@ -21,7 +45,8 @@ services:
   #   ports:
   #     - "8000:8000"
   #   depends_on:
-  #     - db
+  #     - app-database
+  #     - app-redis
   #   environment:
   #     # - DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/books_db
   #     - PORT=8000
@@ -30,6 +55,20 @@ services:
   #     - DB_USER=app_user
   #     - DB_PASSWORD=app_password
   #     - DB_NAME=app_db
+  #     - REDIS_URL=redis://app-redis:6379
+  #     - REDIS_HOST=app-redis
+  #     - REDIS_PASSWORD=
+  #     - REDIS_PORT=6379
+  #   restart: unless-stopped
+  #   networks:
+  #     - app-net
 
+# Create network
+networks:
+  app-net:
+    driver: bridge
+
+# Create volume
 volumes:
-  postgres_data:
+  app-redis-data:
+  app-database-data:

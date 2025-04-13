@@ -17,6 +17,16 @@ class Settings(BaseSettings):
     db_password: str = "app_password"
     db_name: str = "app_db"
 
+    # Redis
+    redis_host: str ="localhost"
+    redis_port: int = 6379
+    redis_password: str = ""
+    redis_ttl: int = 86400
+
+    # Auth settings
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
+
     @property
     def database_url(self) -> str:
         """Construct the database URL with asyncpg driver"""
@@ -30,4 +40,4 @@ class Settings(BaseSettings):
     )
 
 # Create a settings instance
-settings = Settings()
+Config = Settings()

@@ -1,9 +1,10 @@
 # src/__init__.py
 from fastapi import FastAPI
 from src.books.routes import bookRouter
-from src.config import settings
-from src.database import database
+from src.users.routes import userRouter
 from src.health import healthRouter
+from src.config import Config
+from src.database import database
 from contextlib import asynccontextmanager
 from src.utils.logger import logger
 
@@ -26,9 +27,10 @@ async def life_span(app: FastAPI):
 app = FastAPI(
     title="Book store",
     description="This is a book store service.",
-    version=settings.api_version,
-    lifespan=life_span
+    version=Config.api_version,
+    # lifespan=life_span
 )
         
-app.include_router(bookRouter, prefix=f"/api/{settings.api_version}/books", tags=["books"])
-app.include_router(healthRouter, prefix=f"/api/{settings.api_version}", tags=["health"])
+app.include_router(bookRouter, prefix=f"/api/{Config.api_version}/books", tags=["books"])
+app.include_router(userRouter, prefix=f"/api/{Config.api_version}/users", tags=["users"])
+app.include_router(healthRouter, prefix=f"/api/{Config.api_version}", tags=["health"])

@@ -1,31 +1,10 @@
 # src/utils/logger.py
-# import os
-# import logging
-# # import datetime
-# from dotenv import load_dotenv
-
-# # Load environment variables from .env file
-# load_dotenv()
-
-# # Set up basic configuration
-# LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
-# ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
-# ENABLED = ENVIRONMENT != "test"
-
-# # Configure logger with appropriate level
-# logging.basicConfig(
-#     level=getattr(logging, LOG_LEVEL),
-#     format='[%(levelname)s] %(asctime)s %(message)s',
-#     datefmt='%Y-%m-%d %H:%M:%S'
-# )
-
 import logging
-# from src.config.settings import settings
-from src.config import settings
+from src.config import Config
 
 # Set up basic configuration
-LOG_LEVEL = settings.log_level.upper()
-ENVIRONMENT = settings.environment
+LOG_LEVEL = Config.log_level.upper()
+ENVIRONMENT = Config.environment
 ENABLED = ENVIRONMENT != "test"
 
 # Configure logger with appropriate level
