@@ -6,6 +6,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.utils.auth import decode_token
 from src.database import redisClient, get_db
 from src.users.service import UserService
+from src.users.models import User
+from typing import List, Any
 
 userService = UserService()
 
@@ -67,9 +69,23 @@ class RefreshTokenBearer(TokenBearer):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Please provide a refresh token!"
             )
-        
+
 async def get_current_user(token_details: dict = Depends(AccessTokenBearer()), session: AsyncSession = Depends(get_db)):
     user_email = token_details['user']['email']
     user = await userService.get_user_by_email(user_email, session)
+    print(f"user: {user}")
 
     return user
+
+class RoleChecker:
+    def __init__(self, allowed_roles: List[str]) -> None:
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, current_user = Depends(get_current_user)) -> Any:
+        if current_user.role in self.allowed_roles:
+            return True
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not allowed to perform this action!"
+        )
+

@@ -8,13 +8,14 @@ from src.database import get_db
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from src.utils.dependency import RefreshTokenBearer, AccessTokenBearer, get_current_user
+from src.utils.dependency import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
 from src.database import redisClient
 
 REFRESH_TOKEN_EXPIRY = 2
 
 userRouter = APIRouter()
 userService = UserService()
+roleChecker = RoleChecker(['admin', 'user'])
 
 @userRouter.post('/register', response_model=UserModel, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreateModel, session: AsyncSession = Depends(get_db)):
@@ -41,14 +42,15 @@ async def login(user_data: UserLoginModel, session: AsyncSession = Depends(get_d
             access_token = encode_token(
                 user_data = {
                     'email': user.email,
-                    'user_uid': str(user.uid)
+                    'user_uid': str(user.uid),
+                    'role': user.role,
                 }
             )
 
             refresh_token = encode_token(
                 user_data = {
                     'email': user.email,
-                    'user_uid': str(user.uid)
+                    'user_uid': str(user.uid),
                 },
                 refresh = True,
                 expiry = timedelta(days = REFRESH_TOKEN_EXPIRY)
@@ -101,5 +103,5 @@ async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
     )
 
 @userRouter.get('/me')
-async def get_current_user(user = Depends(get_current_user)):
+async def get_current_user(user = Depends(get_current_user), _: bool = Depends(roleChecker)):
     return user
