@@ -8,6 +8,7 @@ from src.database import redisClient, get_session
 from src.users.service import UserService
 from src.database.models import User
 from typing import List, Any
+from src.errors.error import AccessTokenRequired, InsufficientPermission, InvalidToken, RefreshTokenRequired
 
 userService = UserService()
 
@@ -24,23 +25,11 @@ class TokenBearer(HTTPBearer):
         token_data = decode_token(token)
 
         if not self.is_valid_token(token):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail={
-                    "error": "Invalid or expired token!",
-                    "resolution": "Please get a new token!"
-                }
-            )
+            raise InvalidToken()
         
         is_blocked = await redisClient.token_in_blocklist(token_data['jti'])
         if is_blocked:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail={
-                    "error": "This token is invalid or has been revoked!",
-                    "resolution": "Please get a new token!"
-                }
-            )
+            raise InvalidToken()
 
         self.verify_token_data(token_data)
 
@@ -57,18 +46,12 @@ class TokenBearer(HTTPBearer):
 class AccessTokenBearer(TokenBearer):
     def verify_token_data(self, token_data: dict) -> None:
         if token_data and token_data['refresh']:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Please provide an access token!"
-            )
+            raise AccessTokenRequired()
 
 class RefreshTokenBearer(TokenBearer):
     def verify_token_data(self, token_data: dict) -> None:
         if token_data and not token_data['refresh']:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Please provide a refresh token!"
-            )
+            raise RefreshTokenRequired()
 
 async def get_current_user(token_details: dict = Depends(AccessTokenBearer()), session: AsyncSession = Depends(get_session)):
     user_email = token_details['user']['email']
@@ -83,8 +66,5 @@ class RoleChecker:
     def __call__(self, current_user = Depends(get_current_user)) -> Any:
         if current_user.role in self.allowed_roles:
             return True
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not allowed to perform this action!"
-        )
+        raise InsufficientPermission()
 

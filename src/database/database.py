@@ -23,7 +23,8 @@ class Database:
         
         try:
             # Create async SQLAlchemy engine
-            self.engine = create_async_engine(self.db_url, echo=True)
+            # self.engine = create_async_engine(self.db_url, echo=True)
+            self.engine = create_async_engine(self.db_url)
             async with self.engine.begin() as connection:
                 await connection.run_sync(SQLModel.metadata.create_all)
 

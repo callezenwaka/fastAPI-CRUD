@@ -7,7 +7,7 @@ from src.books.service import BookService
 from src.database.models import Tag
 
 from src.tags.schema import TagAddModel, TagCreateModel
-from src.errors import BookNotFound, TagNotFound, TagAlreadyExists
+from src.errors.error import BookNotFound, TagNotFound, TagAlreadyExists
 
 bookService = BookService()
 

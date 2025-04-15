@@ -1,7 +1,7 @@
 # src/users/routes.py
 from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, status
-from src.users.schema import UserDetailsModel, UserModel, UserCreateModel, UserLoginModel
+from src.users.schema import UserDetailsModel, UserModel, UserCreateModel, UserLoginModel, UserMailModel
 from src.users.service import UserService
 from src.utils.auth import encode_token, decode_token, verify_password
 from src.database import get_session
@@ -10,12 +10,27 @@ from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from src.utils.dependency import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
 from src.database import redisClient
+from src.errors.error import UserAlreadyExists, UserNotFound, InvalidCredentials, InvalidToken
+from src.mail.mail import mail, create_message
 
 REFRESH_TOKEN_EXPIRY = 2
 
 userRouter = APIRouter()
 userService = UserService()
 roleChecker = RoleChecker(['admin', 'user'])
+
+@userRouter.post('/send_mail')
+async def send_mail(recipients: UserMailModel):
+    recipients = recipients.addresses
+
+    html = "<h1>Welcome to the app</h1>"
+    subject = "Welcome to our app"
+
+    message = create_message(recipients=recipients, subject=subject, body=html)
+
+    await mail.send_message(message)
+
+    return {"message": "Email sent successfully"}
 
 @userRouter.post('/register', response_model=UserModel, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreateModel, session: AsyncSession = Depends(get_session)):
@@ -24,7 +39,7 @@ async def register(user_data: UserCreateModel, session: AsyncSession = Depends(g
 
     user_exists = await userService.user_exists(email, username, session)
     if user_exists:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Username or email already exists!")
+        raise UserAlreadyExists()
     
     new_user = await userService.create_user(user_data, session)
 
@@ -68,10 +83,7 @@ async def login(user_data: UserLoginModel, session: AsyncSession = Depends(get_s
                     },
                 }
             )
-    raise HTTPException(
-        status_code = status.HTTP_403_FORBIDDEN,
-        detail = "Invalid email or password",
-    )
+    raise InvalidCredentials()
 
 @userRouter.get('/refrest_token')
 async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
@@ -88,7 +100,7 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
             }
         )
     
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
+    raise InvalidToken()
 
 @userRouter.get('/logout')
 async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):

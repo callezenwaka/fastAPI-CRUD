@@ -8,6 +8,8 @@ from src.config import Config
 from src.database import database
 from contextlib import asynccontextmanager
 from src.utils.logger import logger
+from src.errors.error import register_all_errors
+from src.middleware.middleware import register_middleware
 
 @asynccontextmanager
 async def life_span(app: FastAPI):
@@ -26,11 +28,15 @@ async def life_span(app: FastAPI):
     logger.info("Server has been stopped!")
 
 app = FastAPI(
-    title="Book store",
-    description="This is a book store service.",
+    title=Config.title,
+    description=Config.description,
     version=Config.api_version,
     # lifespan=life_span
 )
+
+register_all_errors(app)
+
+register_middleware(app)
         
 app.include_router(bookRouter, prefix=f"/api/{Config.api_version}/books", tags=["books"])
 app.include_router(userRouter, prefix=f"/api/{Config.api_version}/users", tags=["users"])

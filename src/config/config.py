@@ -5,7 +5,21 @@ class Settings(BaseSettings):
     # Server settings
     environment: str = "development"
     port: int = 8000
+    title: str = "FastAPI store"
+    description: str = "This is a fastAPI service"
     api_version: str = "v1"  # Add this line
+
+    # mail
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str = "test@mail.com"
+    MAIL_PORT: int = 587
+    MAIL_SERVER: str
+    MAIL_FROM_NAME: str
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+    USE_CREDENTIALS: bool = True
+    VALIDATE_CERTS: bool = True
     
     # Logging
     log_level: str = "INFO"

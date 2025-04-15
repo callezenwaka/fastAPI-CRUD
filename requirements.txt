@@ -70,3 +70,4 @@ alembic==1.15.2
 passlib==1.7.4
 bcrypt==4.3.0
 pyjwt==2.10.1
+fastapi-mail==1.4.2
