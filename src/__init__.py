@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from src.books.routes import bookRouter
 from src.users.routes import userRouter
+from src.reviews.routes import reviewRouter
 from src.health import healthRouter
 from src.config import Config
 from src.database import database
@@ -33,4 +34,5 @@ app = FastAPI(
         
 app.include_router(bookRouter, prefix=f"/api/{Config.api_version}/books", tags=["books"])
 app.include_router(userRouter, prefix=f"/api/{Config.api_version}/users", tags=["users"])
+app.include_router(reviewRouter, prefix=f"/api/{Config.api_version}/reviews", tags=["reviews"])
 app.include_router(healthRouter, prefix=f"/api/{Config.api_version}", tags=["health"])

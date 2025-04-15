@@ -7,7 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import AsyncGenerator
 from src.config import Config
 from src.utils.logger import logger
-# from src.books.models import Book
+# from src.database.models import Book
 
 # No need for Base = declarative_base() since SQLModel serves as your base class
 
@@ -49,7 +49,7 @@ class Database:
             await connection.run_sync(SQLModel.metadata.create_all)
         logger.debug("Database tables created")
         
-    async def get_db(self) -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """Dependency for getting a database session"""
         if not self.SessionLocal:
             await self.connect()
@@ -64,7 +64,7 @@ class Database:
 
 
 # Create database instance without connecting
-database = Database()
+init_database = Database()
 
 # For dependency injection - this is a function, not an awaited coroutine
-get_db = database.get_db
+get_session = init_database.get_session

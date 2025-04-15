@@ -1,10 +1,10 @@
 # src/users/routes.py
 from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, status
-from src.users.schema import UserModel, UserCreateModel, UserLoginModel
+from src.users.schema import UserDetailsModel, UserModel, UserCreateModel, UserLoginModel
 from src.users.service import UserService
 from src.utils.auth import encode_token, decode_token, verify_password
-from src.database import get_db
+from src.database import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
@@ -18,7 +18,7 @@ userService = UserService()
 roleChecker = RoleChecker(['admin', 'user'])
 
 @userRouter.post('/register', response_model=UserModel, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreateModel, session: AsyncSession = Depends(get_db)):
+async def register(user_data: UserCreateModel, session: AsyncSession = Depends(get_session)):
     email = user_data.email
     username = user_data.username
 
@@ -31,7 +31,7 @@ async def register(user_data: UserCreateModel, session: AsyncSession = Depends(g
     return new_user
 
 @userRouter.post('/login')
-async def login(user_data: UserLoginModel, session: AsyncSession = Depends(get_db)):
+async def login(user_data: UserLoginModel, session: AsyncSession = Depends(get_session)):
     email = user_data.email
     password = user_data.password
 
@@ -102,6 +102,6 @@ async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
         status_code=status.HTTP_200_OK
     )
 
-@userRouter.get('/me')
+@userRouter.get('/me', response_model=UserDetailsModel)
 async def get_current_user(user = Depends(get_current_user), _: bool = Depends(roleChecker)):
     return user

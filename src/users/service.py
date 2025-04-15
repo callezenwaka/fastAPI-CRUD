@@ -1,5 +1,5 @@
 # src/users/service.py
-from src.users.models import User
+from src.database.models import User
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import or_, select
 from src.users.schema import UserCreateModel

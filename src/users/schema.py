@@ -1,7 +1,10 @@
 # src/users/schema.py
 from datetime import datetime
-from uuid import UUID
+from typing import List
+import uuid
 from pydantic import BaseModel, Field
+from src.books.schema import Book
+from src.reviews.schema import ReviewModel
 
 class UserCreateModel(BaseModel):
     username: str = Field(min_length=6)
@@ -11,7 +14,7 @@ class UserCreateModel(BaseModel):
     password: str = Field(min_length=6)
 
 class UserModel(BaseModel):
-    uid: UUID
+    uid: uuid.UUID
     username: str = Field(nullable=False)
     email: str = Field(nullable=False)
     first_name: str = Field(nullable=False)
@@ -20,6 +23,10 @@ class UserModel(BaseModel):
     password_hash: str = Field(exclude=True)
     created_at: datetime
     updated_at: datetime
+
+class UserDetailsModel(UserModel):
+    books: List[Book]
+    reviews: List[ReviewModel]
 
 class UserLoginModel(BaseModel):
     email: str = Field(max_length=40)
