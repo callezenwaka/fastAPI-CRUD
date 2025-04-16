@@ -31,6 +31,17 @@ alembic stamp head
 alembic upgrade head
 ```
 
+## Test command
+```bash
+# both the src and test folders are apart
+export PYTHONPATH=$(pwd)/src
+pytest
+
+# test schemathesis
+st run http://localhost:8000/api/v1/openapi.json --experimental=openapi-3.1
+st run http://localhost:8000/api/v1/openapi.json --checks all --experimental=openapi-3.1
+```
+
 ## Resources
 - https://jod35.github.io/fastapi-beyond-crud-docs/site/chapter3/
 - https://docs.thunderclient.com/features/system-variables

@@ -9,3 +9,7 @@ __pycache__/
 # Environments
 .env
 .venv
+
+# tests
+.pytest_cache
+.hypothesis/

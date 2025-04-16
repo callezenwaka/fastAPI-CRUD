@@ -32,6 +32,7 @@ app = FastAPI(
     description=Config.description,
     version=Config.api_version,
     docs_url=f"/api/{Config.api_version}/docs",
+    openapi_url=f"/api/{Config.api_version}/openapi.json",
     contact={
         "name": "Wise Owl",
         "email": "info@mail.com",

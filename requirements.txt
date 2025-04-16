@@ -71,3 +71,4 @@ passlib==1.7.4
 bcrypt==4.3.0
 pyjwt==2.10.1
 fastapi-mail==1.4.2
+schemathesis==3.39.15
