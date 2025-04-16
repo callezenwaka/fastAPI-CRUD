@@ -3,8 +3,8 @@ from datetime import datetime
 from typing import List
 import uuid
 from pydantic import BaseModel, Field
-from src.books.schema import Book
-from src.reviews.schema import ReviewModel
+from src.books.schemas import Book
+from src.reviews.schemas import ReviewModel
 
 class UserCreateModel(BaseModel):
     username: str = Field(min_length=6)
@@ -15,10 +15,10 @@ class UserCreateModel(BaseModel):
 
 class UserModel(BaseModel):
     uid: uuid.UUID
-    username: str = Field(nullable=False)
-    email: str = Field(nullable=False)
-    first_name: str = Field(nullable=False)
-    last_name: str = Field(nullable=False)
+    username: str
+    email: str
+    first_name: str
+    last_name: str
     is_verified: bool = Field(default=False)
     password_hash: str = Field(exclude=True)
     created_at: datetime

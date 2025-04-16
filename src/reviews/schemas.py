@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 class ReviewModel(BaseModel):
     uid: uuid.UUID
     rating: int = Field(lt=5)
-    review_text: str = Field(nullable=False)
+    review_text: str
     user_uid: Optional[uuid.UUID] = Field(default=None)
     book_uid: Optional[uuid.UUID] = Field(default=None)
     created_at: datetime
@@ -14,4 +14,4 @@ class ReviewModel(BaseModel):
 
 class ReviewCreateModel(BaseModel):
     rating: int = Field(lt=5)
-    review_text: str = Field(nullable=False)
+    review_text: str

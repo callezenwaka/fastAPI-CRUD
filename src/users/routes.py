@@ -1,7 +1,7 @@
 # src/users/routes.py
 from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, status
-from src.users.schema import UserDetailsModel, UserModel, UserCreateModel, UserLoginModel
+from src.users.schemas import UserDetailsModel, UserModel, UserCreateModel, UserLoginModel
 from src.users.service import UserService
 from src.utils.auth import encode_token, decode_token, verify_password
 from src.database import get_session

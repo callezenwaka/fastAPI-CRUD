@@ -3,7 +3,7 @@ from src.database.models import Review
 from src.users.service import UserService
 from src.books.service import BookService
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.reviews.schema import ReviewCreateModel
+from src.reviews.schemas import ReviewCreateModel
 
 userService = UserService()
 bookService = BookService()

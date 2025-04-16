@@ -2,7 +2,7 @@
 from src.database.models import User
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import or_, select
-from src.users.schema import UserCreateModel
+from src.users.schemas import UserCreateModel
 from src.utils.auth import generate_password_hash
 
 class UserService:

@@ -6,7 +6,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.books.service import BookService
 from src.database.models import Tag
 
-from src.tags.schema import TagAddModel, TagCreateModel
+from src.tags.schemas import TagAddModel, TagCreateModel
 from src.errors.error import BookNotFound, TagNotFound, TagAlreadyExists
 
 bookService = BookService()

@@ -31,6 +31,11 @@ app = FastAPI(
     title=Config.title,
     description=Config.description,
     version=Config.api_version,
+    docs_url=f"/api/{Config.api_version}/docs",
+    contact={
+        "name": "Wise Owl",
+        "email": "info@mail.com",
+    }
     # lifespan=life_span
 )
 

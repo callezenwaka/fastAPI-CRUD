@@ -6,10 +6,10 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 
 from src.utils.dependency import RoleChecker
-from src.books.schema import Book
+from src.books.schemas import Book
 from src.database import get_session
 
-from src.tags.schema import TagAddModel, TagCreateModel, TagModel
+from src.tags.schemas import TagAddModel, TagCreateModel, TagModel
 from .service import TagService
 
 tags_router = APIRouter()
